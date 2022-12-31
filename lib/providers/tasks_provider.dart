@@ -9,26 +9,30 @@ enum TaskPriority {
 class Task extends ChangeNotifier {
   String id;
   String title;
+  bool isCompleted;
   TaskPriority priority;
-  Color color;
 
   Task({
     required this.id,
     required this.title,
+    required this.isCompleted,
     required this.priority,
-    required this.color,
   });
 
   void updateTask({
     String? id,
     String? title,
     TaskPriority? priority,
-    Color? color,
   }) {
     this.id = id ?? this.id;
     this.title = title ?? this.title;
     this.priority = priority ?? this.priority;
-    this.color = color ?? this.color;
+    notifyListeners();
+  }
+
+  void setTaskStateTo(bool selectedState) {
+    isCompleted = selectedState;
+    notifyListeners();
   }
 }
 
@@ -39,32 +43,19 @@ class TasksProvider extends ChangeNotifier {
     return [..._tasks];
   }
 
-  List<Task> get lowPriorityTasks {
-    return _tasks.where((task) => task.priority == TaskPriority.Low).toList();
-  }
-
-  List<Task> get mediumPriorityTasks {
-    return _tasks
-        .where((task) => task.priority == TaskPriority.Medium)
-        .toList();
-  }
-
-  List<Task> get highPriorityTasks {
-    return _tasks.where((task) => task.priority == TaskPriority.High).toList();
-  }
-
-  void addTask(
-    String id,
-    String title,
-    TaskPriority priority,
-    Color color,
-  ) {
+  void addTask({
+    required String id,
+    required String title,
+    required bool isCompleted,
+    required TaskPriority priority,
+  }) {
     _tasks.add(Task(
       id: id,
       title: title,
+      isCompleted: isCompleted,
       priority: priority,
-      color: color,
     ));
+    notifyListeners();
   }
 
   void removeTask(String id) {
